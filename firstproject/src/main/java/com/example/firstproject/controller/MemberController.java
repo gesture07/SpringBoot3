@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.List;
-
 
 @Slf4j
 @Controller
@@ -20,10 +18,16 @@ public class MemberController {
     @Autowired
     MemberRepository memberRepository;
 
-    @GetMapping("/signup")
-    public String signUpPage(){
+    @GetMapping("/members/new")
+    public String newMemberForm(){
         return "members/new";
     }
+
+    @GetMapping("/signup")
+    public String signUpPage(){
+        return "/members/new";
+    }
+
 
     @PostMapping("/join")
     public String join(MemberForm memberForm) {
@@ -35,7 +39,7 @@ public class MemberController {
         Member saved = memberRepository.save(member);
         log.info(saved.toString());
         //System.out.println(saved.toString());
-        return "";
+        return "redirect:/members/" + saved.getId();
     }
     @GetMapping("/members/{id}")
     public String show(@PathVariable Long id, Model model){
@@ -46,7 +50,7 @@ public class MemberController {
 
     @GetMapping("/members")
     public String index(Model model){
-        List<Member> memberEntityList = memberRepository.findAll();
+        Iterable<Member> memberEntityList = memberRepository.findAll();
         model.addAttribute("memberList", memberEntityList);
         return "members/index";
     }

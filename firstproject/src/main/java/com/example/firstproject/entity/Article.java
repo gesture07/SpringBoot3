@@ -5,9 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@Getter
 @AllArgsConstructor //Article 생성자 추가
 @NoArgsConstructor //기본 생서자 추가 어노테이션
 @ToString    //toString()메서드 추가
@@ -20,9 +22,6 @@ public class Article {
     private String title;
     @Column //content필드 선언, CB테이블의 content열과 연결됨
     private String content;
-
-
-
 
 
 
