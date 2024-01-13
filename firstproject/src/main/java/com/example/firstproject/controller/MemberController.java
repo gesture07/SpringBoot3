@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Slf4j
@@ -53,5 +54,36 @@ public class MemberController {
         Iterable<Member> memberEntityList = memberRepository.findAll();
         model.addAttribute("memberList", memberEntityList);
         return "members/index";
+    }
+
+
+    @GetMapping("/members/{id}/edit")
+    public String edit(@PathVariable Long id, Model model){
+        Member memberEntity = memberRepository.findById(id).orElse(null);
+        model.addAttribute("member",memberEntity);
+
+        return "members/edit";
+    }
+
+    @PostMapping("/members/update")
+    public String update(MemberForm form){
+        log.info(toString());
+        Member memberEntity = form.toEntity();
+        //log.info(MemberEntity.toString());
+        Member target = memberRepository.findById(memberEntity.getId()).orElse(null);
+        if(target != null)
+            memberRepository.save(memberEntity);
+        log.info(memberEntity.toString());
+        return "redirect:/members/" + memberEntity.getId();
+    }
+
+    @GetMapping("members/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes rttr){
+        Member target = memberRepository.findById(id).orElse(null);
+        if(target != null){
+            memberRepository.delete(target);
+            rttr.addFlashAttribute("msg", "삭제되었습니다!");
+        }
+        return "redirect:/members";
     }
 }

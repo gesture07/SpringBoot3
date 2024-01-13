@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -62,5 +63,46 @@ public class ArticleController {
         model.addAttribute("articleList", articleEntityList);
         //뷰 페이지 설정하기
         return "articles/index";
+    }
+
+    @GetMapping("/articles/{id}/edit")  //url요청 접수, 컨트롤러에서 변수 사용할 때 중괄호 한 개, 뷰 페이지는 두 개
+    public String edit(@PathVariable Long id, Model model){   //메서드 생성 및 뷰 페이지 설정
+        //수정항 데이터 가져오기
+        Article articleEntity = articleRepository.findById(id).orElse(null);
+        //모델에 데이터 등록하기
+        model.addAttribute("article", articleEntity);
+        //뷰 페이지 설정하기
+        return "articles/edit";
+    }
+
+    @PostMapping("/articles/update")
+    public String update(ArticleForm form){ //매개변수로 DTO 받아 오기
+        log.info(form.toString());
+        //DTO를 엔티티로 변환하기
+        Article articleEntity = form.toEntity(); //DTO를 엔티티로 변환하기
+        log.info(articleEntity.toString()); //엔티티로 잘 변환했는지 로그 찍기
+        //엔티티를 DB에 저장하기
+        //DB에서 기존 데이터 가져오기
+        Article target = articleRepository.findById(articleEntity.getId()).orElse(null);
+        //기존 데이터 값을 갱신하기
+        if(target != null)
+            articleRepository.save(articleEntity);
+        //수정 결과 페이지로 리다이렉트하기
+        return "redirect:/articles/" + articleEntity.getId();
+    }
+
+    @GetMapping("/articles/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes rttr){
+        log.info("request delete");
+        //삭제할 대상 가져오기
+        Article target = articleRepository.findById(id).orElse(null);
+        log.info(target.toString());
+        //대상 엔티티 삭제하기
+        if(target != null) {
+            articleRepository.delete(target);
+            rttr.addFlashAttribute("msg", "Delete!");
+        }
+        //결과 페이지로 리다이렉트하기
+        return "redirect:/articles";
     }
 }

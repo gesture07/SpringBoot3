@@ -8,6 +8,7 @@ import lombok.ToString;
 @ToString
 public class MemberForm {
 
+    private Long id;
     private String email;
     private String password;
 
@@ -16,6 +17,6 @@ public class MemberForm {
 
 
     public Member toEntity(){
-        return new Member(null, email, password);
+        return new Member(id, email, password);
     }
 }
